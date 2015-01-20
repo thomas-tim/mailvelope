@@ -310,7 +310,7 @@ module.exports = function(grunt) {
         }
       },
       buildChromeCRX: {
-        command: './crxmake build/mailvelope.chrome/ ../chrome-local.pem',
+        command: './crxmake build/mailvelope.chrome/ ./cert/chrome.pem',
         options: {
           stdout: true
         }
@@ -336,7 +336,8 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-shell');
 
   //custom tasks
-  grunt.registerTask('dist-cr', ['compress:chrome', 'shell:preCRX', 'shell:buildChromeCRX', 'shell:postCRX']);
+  grunt.registerTask('dist-cr', ['compress:chrome']);
+  grunt.registerTask('dist-crx', ['shell:preCRX', 'shell:buildChromeCRX', 'shell:postCRX']);
   grunt.registerTask('dist-ff', ['mozilla-addon-sdk', 'mozilla-cfx-xpi']);
   grunt.registerTask('start-ff-clean', ['mozilla-cfx:run_stable']);
 
