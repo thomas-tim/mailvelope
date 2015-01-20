@@ -154,30 +154,30 @@ module.exports = function(grunt) {
           cwd: 'build/',
           dest: 'build/chrome/'
         },
-        {
-          expand: true,
-          src: '**/*',
-          cwd: 'build/common/lib/',
-          dest: 'build/chrome/lib/common/'
-        },
-        {
-          expand: true,
-          src: ['common/**/*', '!common/lib/**/*'],
-          cwd: 'build/',
-          dest: 'build/firefox/data/'
-        },
-        {
-          expand: true,
-          src: '**/*',
-          cwd: 'build/common/lib/',
-          dest: 'build/firefox/lib/common/'
-        },
-        {
-          expand: true,
-          src: '**/*',
-          cwd: 'locales',
-          dest: 'build/chrome/_locales'
-        }]
+          {
+            expand: true,
+            src: '**/*',
+            cwd: 'build/common/lib/',
+            dest: 'build/chrome/lib/common/'
+          },
+          {
+            expand: true,
+            src: ['common/**/*', '!common/lib/**/*'],
+            cwd: 'build/',
+            dest: 'build/firefox/data/'
+          },
+          {
+            expand: true,
+            src: '**/*',
+            cwd: 'build/common/lib/',
+            dest: 'build/firefox/lib/common/'
+          },
+          {
+            expand: true,
+            src: '**/*',
+            cwd: 'locales',
+            dest: 'build/chrome/_locales'
+          }]
       },
       locale_firefox: {
         expand: true,
@@ -205,40 +205,40 @@ module.exports = function(grunt) {
           src: ['dep/chrome/openpgpjs/dist/openpgp.js', 'dep/chrome/openpgpjs/dist/openpgp.worker.js'],
           dest: 'build/chrome/dep/'
         },
-        {
-          expand: true,
-          flatten: true,
-          cwd: 'node_modules/',
-          src: [
-            'mailreader/src/mailreader-parser.js',
-            'mailreader/node_modules/mimeparser/src/*.js',
-            'mailreader/node_modules/mimeparser/node_modules/addressparser/src/*.js',
-            'mailreader/node_modules/mimeparser/node_modules/mimefuncs/src/*.js'
-          ],
-          dest: 'build/chrome/lib/'
-        },
-        {
-          src: 'dep/firefox/openpgpjs/dist/openpgp.preload_dep.min.js',
-          dest: 'build/firefox/lib/openpgp.js'
-        },
-        {
-          expand: true,
-          flatten: true,
-          src: ['dep/firefox/openpgpjs/dist/openpgp.min.js', 'dep/firefox/openpgpjs/dist/openpgp.worker.min.js'],
-          dest: 'build/firefox/data/'
-        },
-        {
-          expand: true,
-          flatten: true,
-          cwd: 'node_modules/',
-          src: [
-            'mailreader/src/mailreader-parser.js',
-            'mailreader/node_modules/mimeparser/src/*.js',
-            'mailreader/node_modules/mimeparser/node_modules/addressparser/src/*.js',
-            'mailreader/node_modules/mimeparser/node_modules/mimefuncs/src/*.js'
-          ],
-          dest: 'build/firefox/lib/'
-        }]
+          {
+            expand: true,
+            flatten: true,
+            cwd: 'node_modules/',
+            src: [
+              'mailreader/src/mailreader-parser.js',
+              'mailreader/node_modules/mimeparser/src/*.js',
+              'mailreader/node_modules/mimeparser/node_modules/addressparser/src/*.js',
+              'mailreader/node_modules/mimeparser/node_modules/mimefuncs/src/*.js'
+            ],
+            dest: 'build/chrome/lib/'
+          },
+          {
+            src: 'dep/firefox/openpgpjs/dist/openpgp.preload_dep.min.js',
+            dest: 'build/firefox/lib/openpgp.js'
+          },
+          {
+            expand: true,
+            flatten: true,
+            src: ['dep/firefox/openpgpjs/dist/openpgp.min.js', 'dep/firefox/openpgpjs/dist/openpgp.worker.min.js'],
+            dest: 'build/firefox/data/'
+          },
+          {
+            expand: true,
+            flatten: true,
+            cwd: 'node_modules/',
+            src: [
+              'mailreader/src/mailreader-parser.js',
+              'mailreader/node_modules/mimeparser/src/*.js',
+              'mailreader/node_modules/mimeparser/node_modules/addressparser/src/*.js',
+              'mailreader/node_modules/mimeparser/node_modules/mimefuncs/src/*.js'
+            ],
+            dest: 'build/firefox/lib/'
+          }]
       }
     },
 
@@ -301,6 +301,26 @@ module.exports = function(grunt) {
         push: false,
         files: ['package.json', 'bower.json', 'chrome/manifest.json', 'firefox/package.json', 'common/res/defaults.json']
       }
+    },
+    shell: {
+      preCRX: {
+        command: 'mv build/chrome/ build/mailvelope.chrome',
+        options: {
+          stdout: true
+        }
+      },
+      buildChromeCRX: {
+        command: './crxmake build/mailvelope.chrome/ ../chrome-local.pem',
+        options: {
+          stdout: true
+        }
+      },
+      postCRX: {
+        command: 'mv build/mailvelope.chrome build/chrome/ && mv mailvelope.chrome.crx dist/',
+        options: {
+          stdout: true
+        }
+      }
     }
   });
 
@@ -313,9 +333,10 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-mozilla-addon-sdk');
   grunt.loadNpmTasks('grunt-bump');
   grunt.loadNpmTasks("grunt-jscs");
+  grunt.loadNpmTasks('grunt-shell');
 
   //custom tasks
-  grunt.registerTask('dist-cr', ['compress:chrome']);
+  grunt.registerTask('dist-cr', ['compress:chrome', 'shell:preCRX', 'shell:buildChromeCRX', 'shell:postCRX']);
   grunt.registerTask('dist-ff', ['mozilla-addon-sdk', 'mozilla-cfx-xpi']);
   grunt.registerTask('start-ff-clean', ['mozilla-cfx:run_stable']);
 
