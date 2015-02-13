@@ -99,6 +99,19 @@ var options = {};
       }
     });
 
+    // Activate tab after switch from links to tabs outside
+    jQuery(document).ready(function($) {
+      $('[data-toggle="tab"]:not(.list-group-item)').click(function() {
+        var id = $(this).attr('href'),
+        tabTrigger = $('.list-group a[href="' + id + '"]');
+
+        if (id && tabTrigger) {
+          tabTrigger.siblings('a.list-group-item').removeClass('active');
+          tabTrigger.addClass('active');
+        }
+      });
+    });
+
     exports.getAllKeyringAttr(function(data) {
       if (data === undefined) {
         return false;
